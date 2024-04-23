@@ -34,8 +34,46 @@ class WTDGC_ADMIN {
 
 		// Add admin menu.
 		add_action( 'admin_menu', array( $this, 'wtddb_admin_menu' ) );
- 
+
+		// Create a rest api 
+		add_action('rest_api_init', array($this, 'register_routes'));
 	}
+
+	public function register_routes(){
+        register_rest_route('hydra/v1', '/google-calendar', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'google_calendar_api'),
+            // 'permission_callback' => function () {
+            //     return current_user_can('edit_others_posts');
+            // }
+        ));
+    }
+
+	public function google_calendar_api(){ 
+
+        // Google passes a parameter 'code' in the Redirect Url
+		if(isset($_GET['code'])) {
+			try { 
+				
+				// Get the access token 
+				$data = $this->google_calendar->GetAccessToken( $_GET['code']);
+				echo $data;
+				
+				// // Save the access token as a session variable
+				// $_SESSION['access_token'] = $data['access_token'];
+
+				// // Redirect to the page where user can create event
+				// header('Location: home.php');
+				exit();
+			}
+			catch(Exception $e) {
+				echo $e->getMessage();
+				exit();
+			}
+		}
+        
+    
+    }
 
 	/**
 	 * Enqueue admin scripts.

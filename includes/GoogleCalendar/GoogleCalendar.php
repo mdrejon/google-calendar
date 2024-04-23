@@ -63,4 +63,28 @@ class GoogleCalendar{
  
     }
 
+    public function GetAccessToken( $code){
+        $url = $this->tokenUrl;
+        $clientId = $this->clientId;
+        $clientSecret = $this->clientSecret;
+        $redirectUrl = $this->redirectUrl;
+        $post_fields = array(
+            'code' => $code,
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+            'redirect_uri' => $redirectUrl,
+            'grant_type' => 'authorization_code'
+        ); 
+        // use Wp Remote Request
+        $response = wp_remote_post($url, array(
+            'body' => $post_fields
+        ));
+        $body = wp_remote_retrieve_body($response);
+
+        return $body;
+        exit;
+
+        return json_decode($body, true);
+    }
+
 }
